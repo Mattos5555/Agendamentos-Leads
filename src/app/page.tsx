@@ -1,65 +1,225 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import { supabase } from "../../lib/supabase";
 
 export default function Home() {
+
+  const [tipoFormulario, setTipoFormulario] = useState("agendamento");
+
+  // AGENDAMENTO
+  const [cliente, setCliente] = useState("");
+  const [data, setData] = useState("");
+  const [horario, setHorario] = useState("");
+  const [local, setLocal] = useState("");
+
+  // LEADS
+  const [nome, setNome] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [empreendimento, setEmpreendimento] = useState("");
+  const [campanha, setCampanha] = useState("");
+  const [status, setStatus] = useState("");
+
+  async function adicionarAgendamento(e: any) {
+    e.preventDefault();
+
+    const { error } = await supabase
+      .from("agendamentos")
+      .insert([
+        {
+          cliente,
+          data,
+          horario,
+          local,
+        },
+      ]);
+
+    if (error) {
+      alert("Erro ao salvar agendamento");
+      console.log(error);
+      return;
+    }
+
+    alert("Agendamento enviado com sucesso 🚀");
+
+    setCliente("");
+    setData("");
+    setHorario("");
+    setLocal("");
+  }
+
+  async function enviarLead(e: any) {
+    e.preventDefault();
+
+    const { error } = await supabase
+      .from("leads")
+      .insert([
+        {
+          nome,
+          telefone,
+          empreendimento,
+          campanha,
+          status,
+        },
+      ]);
+
+    if (error) {
+      alert("Erro ao enviar lead");
+      console.log(error);
+      return;
+    }
+
+    alert("Lead enviado com sucesso 🚀");
+
+    setNome("");
+    setTelefone("");
+    setEmpreendimento("");
+    setCampanha("");
+    setStatus("");
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
+
+      <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-2xl">
+
+        <h1 className="text-4xl font-bold mb-8 text-center">
+          Atendimento Imobiliário
+        </h1>
+
+        <div className="flex gap-4 mb-8">
+
+          <button
+            onClick={() => setTipoFormulario("agendamento")}
+            className="flex-1 bg-black text-white p-4 rounded-xl"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            Agendamento
+          </button>
+
+          <button
+            onClick={() => setTipoFormulario("lead")}
+            className="flex-1 bg-gray-700 text-white p-4 rounded-xl"
+          >
+            Cadastro de Leads
+          </button>
+
+        </div>
+
+        {tipoFormulario === "agendamento" && (
+
+          <form
+            onSubmit={adicionarAgendamento}
+            className="space-y-4"
+          >
+
+            <input
+              type="text"
+              placeholder="Nome do Cliente"
+              className="w-full border p-4 rounded-xl"
+              value={cliente}
+              onChange={(e) => setCliente(e.target.value)}
+              required
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+            <input
+              type="date"
+              className="w-full border p-4 rounded-xl"
+              value={data}
+              onChange={(e) => setData(e.target.value)}
+              required
+            />
+
+            <input
+              type="time"
+              className="w-full border p-4 rounded-xl"
+              value={horario}
+              onChange={(e) => setHorario(e.target.value)}
+              required
+            />
+
+            <input
+              type="text"
+              placeholder="Local do Agendamento"
+              className="w-full border p-4 rounded-xl"
+              value={local}
+              onChange={(e) => setLocal(e.target.value)}
+              required
+            />
+
+            <button
+              type="submit"
+              className="w-full bg-black text-white p-4 rounded-xl text-lg"
+            >
+              Confirmar Agendamento
+            </button>
+
+          </form>
+        )}
+
+        {tipoFormulario === "lead" && (
+
+          <form
+            onSubmit={enviarLead}
+            className="space-y-4"
           >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+
+            <input
+              type="text"
+              placeholder="Nome"
+              className="w-full border p-4 rounded-xl"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              required
+            />
+
+            <input
+              type="text"
+              placeholder="Número de telefone"
+              className="w-full border p-4 rounded-xl"
+              value={telefone}
+              onChange={(e) => setTelefone(e.target.value)}
+              required
+            />
+
+            <input
+              type="text"
+              placeholder="Empreendimento"
+              className="w-full border p-4 rounded-xl"
+              value={empreendimento}
+              onChange={(e) => setEmpreendimento(e.target.value)}
+              required
+            />
+
+            <input
+              type="text"
+              placeholder="Qual campanha?"
+              className="w-full border p-4 rounded-xl"
+              value={campanha}
+              onChange={(e) => setCampanha(e.target.value)}
+              required
+            />
+
+            <input
+              type="text"
+              placeholder="Status atualizado"
+              className="w-full border p-4 rounded-xl"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              required
+            />
+
+            <button
+              type="submit"
+              className="w-full bg-black text-white p-4 rounded-xl text-lg"
+            >
+              Enviar Lead
+            </button>
+
+          </form>
+        )}
+
+      </div>
+
+    </main>
   );
 }
